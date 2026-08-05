@@ -9,41 +9,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Travel Awards specific milestone dates
         const milestones = [
-            new Date('2025-07-09'), // Applications Open
-            new Date('2025-08-29'), // Application Deadline (updated to match HTML)
-            new Date('2025-10-01'), // Award Notification (estimated)
-            new Date('2025-12-06')  // Workshop
+            new Date('2026-08-03'), // Applications Open
+            new Date('2026-09-05'), // Application Deadline
+            new Date('2026-10-09'), // Award Notification
+            new Date('2026-12-06')  // Workshop — PLACEHOLDER, NeurIPS 2026 date not yet announced
         ];
 
         const now = new Date();
 
-        // Calculate progress based on current phase
-        let progress = 0;
+        // Markers are equal-width flex columns, so milestone i sits at (i + 0.5) / N of the
+        // track. Fill to the marker we've reached, plus how far we are into the current leg.
+        const N = milestones.length;
+        let progress;
 
         if (now < milestones[0]) {
-            // Before applications open
-            progress = 0;
-        } else if (now < milestones[1]) {
-            // Between applications open and deadline (0% to 25%)
-            const totalDuration = milestones[1] - milestones[0];
-            const elapsed = now - milestones[0];
-            const phaseProgress = Math.min((elapsed / totalDuration) * 100, 100);
-            progress = (phaseProgress * 0.25); // 0% to 25%
-        } else if (now < milestones[2]) {
-            // Between application deadline and award notification (25% to 50%)
-            const totalDuration = milestones[2] - milestones[1];
-            const elapsed = now - milestones[1];
-            const phaseProgress = Math.min((elapsed / totalDuration) * 100, 100);
-            progress = 35 + (phaseProgress * 0.25); // 25% to 50%
-        } else if (now < milestones[3]) {
-            // Between award notification and workshop (50% to 75%)
-            const totalDuration = milestones[3] - milestones[2];
-            const elapsed = now - milestones[2];
-            const phaseProgress = Math.min((elapsed / totalDuration) * 100, 100);
-            progress = 65 + (phaseProgress * 0.25); // 50% to 75%
+            progress = 0;                                   // nothing has happened yet
+        } else if (now >= milestones[N - 1]) {
+            progress = 100;                                 // past the last milestone
         } else {
-            // After workshop
-            progress = 100;
+            const i = milestones.findIndex(d => now < d) - 1;
+            const frac = (now - milestones[i]) / (milestones[i + 1] - milestones[i]);
+            progress = ((i + frac + 0.5) / N) * 100;
         }
 
         // Set initial width to 0 and animate to calculated progress
